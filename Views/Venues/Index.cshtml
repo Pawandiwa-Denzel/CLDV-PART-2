@@ -1,0 +1,71 @@
+﻿@model VenueSearchViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="mb-3">Our Venues</h1>
+
+<!-- Search Form -->
+<form asp-controller="Venues" asp-action="Index" method="get" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="searchString" class="form-control"
+                   placeholder="Search by name..." value="@Model.SearchString" />
+        </div>
+        <div class="col-md-3">
+            <select name="locationFilter" class="form-select" asp-items="@(new SelectList(Model.Locations))">
+                <option value="">All Locations</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="number" name="capacityFilter" class="form-control"
+                   placeholder="Min capacity" value="@Model.CapacityFilter" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create" class="btn btn-success mb-3">Create New Venue</a>
+</p>
+
+<!-- Table View -->
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Venues.First().VenueName)</th>
+            <th>@Html.DisplayNameFor(model => model.Venues.First().Location)</th>
+            <th>@Html.DisplayNameFor(model => model.Venues.First().Capacity)</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Venues)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.VenueName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Location)</td>
+                <td>@Html.DisplayFor(modelItem => item.Capacity)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" alt="Venue Image" style="max-height: 50px; max-width: 100px;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">No image</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.VenueId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.VenueId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.VenueId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

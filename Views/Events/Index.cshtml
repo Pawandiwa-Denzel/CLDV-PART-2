@@ -1,0 +1,96 @@
+﻿@model EventSearchViewModel
+@using poe.Extensions  <!-- Add this line -->
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="mb-3">Upcoming Events</h1>
+
+<!-- Display Success Message -->
+@if (TempData["SuccessMessage"] != null)
+{
+        <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+}
+
+<!-- Display Error Message -->
+@if (TempData["ErrorMessage"] != null)
+{
+        <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+}
+
+<!-- Search Form -->
+<form asp-controller="Events" asp-action="Index" method="get" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-5">
+            <input type="text" name="searchString" class="form-control"
+                   placeholder="Search events..." value="@Model.SearchString" />
+        </div>
+        <div class="col-md-5">
+            <input type="date" name="dateFilter" class="form-control"
+                   value="@Model.DateFilter" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </div>
+</form>
+
+<p>
+    <a asp-action="Create" class="btn btn-success mb-3">Create New Event</a>
+</p>
+
+<!-- Enhanced Table View -->
+<table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Events.First().EventName)</th>
+            <th>@Html.DisplayNameFor(model => model.Events.First().EventDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Events.First().Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Events.First().Venue)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Events)
+        {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.EventName)</td>
+                    <td>@item.EventDate.ToString("MMM dd, yyyy h:mm tt")</td>
+                    <td>
+                    @if (!string.IsNullOrEmpty(item.Description))
+                    {
+                        @item.Description.Truncate(100)
+                    }
+                    else
+                    {
+                                <span class="text-muted">No description</span>
+                    }
+                    </td>
+                    <td>
+                    @if (item.Venue != null)
+                    {
+                                <span>@item.Venue.VenueName (@item.Venue.Location)</span>
+                    }
+                    else
+                    {
+                                <span class="badge bg-warning text-dark">Venue Needed</span>
+                    }
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-sm btn-danger">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

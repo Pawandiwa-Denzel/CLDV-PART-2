@@ -1,0 +1,116 @@
+﻿@model IEnumerable<poe.Models.Booking>
+@using poe.Extensions
+@{
+    ViewData["Title"] = "All Bookings";
+}
+
+<div class="container">
+    <h1 class="my-4">@ViewData["Title"]</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search Box -->
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="searchString" class="form-control"
+                   placeholder="Search by Event or Venue" value="@ViewData["CurrentFilter"]">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
+
+    <!-- Bookings Table -->
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["IdSort"]">
+                            Booking ID
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["EventSort"]">
+                            Event
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSort"]">
+                            Event Date
+                        </a>
+                    </th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["VenueSort"]">
+                            Venue
+                        </a>
+                    </th>
+                    <th>Location</th>
+                    <th>Capacity</th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["BookingDateSort"]">
+                            Booked On
+                        </a>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.BookingId</td>
+                        <td>
+                            <strong>@item.Event?.EventName</strong>
+                            @if (!string.IsNullOrEmpty(item.Event?.Description))
+                            {
+                                <div class="text-muted small">
+                                    @item.Event.Description.Truncate(50)
+                                </div>
+                            }
+                        </td>
+                        <td>@item.Event?.EventDate.ToString("g")</td>
+                        <td>@item.Venue?.VenueName</td>
+                        <td>@item.Venue?.Location</td>
+                        <td>@item.Venue?.Capacity</td>
+                        <td>@item.BookingDate.ToString("d")</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Details" asp-route-id="@item.BookingId" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.BookingId" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="fas fa-plus"></i> Create New Booking
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
+}
